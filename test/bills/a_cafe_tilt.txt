@@ -1,0 +1,27 @@
+SAMPLE CAFE
+12, FC Road, Shivajinagar
+Pune 411004
+GSTIN: 27ABCDE1234F175
+Date: 17/11/26 Dine In: T4
+Time: 20:4] Bill No,: 1833
+Cashier: biller
+Item Qty. Price Amount
+Cold Coffee 2 180.00 360.00
+Masala Chai 1 60.00 60.00
+Peri Peri Fries 1 220.00 220.00
+Paneer Tikka Pizza 1 420.00 420.00
+Virgin Mojito 2 190.99 380.00
+Chicken Burger 1 290.00 290.00
+Nachos with Cheese | 260.00 260.00
+Dip
+Pasta Alfredo 1 360.00 360.00
+Chocolate Brownie 1 240.00 240.00
+with Ice Cream
+Total Qty: 11 Sub Total 2590.00
+CGST 2.5% 64.75
+SGST 2.5% 64.75
+Service Charge 10% 259.00
+Round off -0.50
+Grand Total Rs 2978.99
+_——————
+Thanks, visit again

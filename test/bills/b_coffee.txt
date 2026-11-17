@@ -1,0 +1,14 @@
+SAMPLE COFFEE BAR
+Koregaon Park, Pune
+GSTIN 27PQRST6789K1Z2
+Order #A-221 17-Nov-2026 6:12 PM
+1 x Cappuccino 180
+2 x Iced Americano 320
+1 x Croissant 150
+1 x Hazelnut Frappe 240
+1 x Banana Bread 130
+Subtotal 1020.00
+GST @ 5% 51.00
+TOTAL 1071.00
+Paid by: UPI
+Thank you!

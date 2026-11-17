@@ -1,0 +1,21 @@
+SAMPLE PUNJABI RASOL
+12, FC Road, Shivajinagar
+Pune 411004
+GSTIN: 27ABCDE1234F1Z5
+Date: 17/11/26 Dine In: T4
+Time: 20:41 Bill No.: 1832
+Cashier: biller
+Item Qty. Price Amount
+Butter Chicken 2 480.00 960.00
+Dal Makhani at 340.00 340.00
+Butter Naan 6 70.00 420.00
+Jeera Rice 2 220.00 440.00
+Fresh Lime Soda 4 120.00 480.00
+Gulab Jamun 2 130.00 260.00
+Total Qty: 17 Sub Total 2,900.00
+CGST 2.5% 72.50
+SGST 2.5% 72.50
+Service Charge 5% 145.00
+Round off +0.00
+Grand Total Rs 3,190.00
+Thanks, visit again

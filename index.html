@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bill Split · split the bill by who had what</title>
+<meta name="description" content="Scan the restaurant bill, tap who had what, and send everyone their exact share on UPI. Tax and service charge shared fairly. Free, and the bill never leaves your phone.">
+<meta name="theme-color" content="#F2EFE8">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* A till receipt on a cafe table: warm paper, black ink, and each friend's own bright colour. */
+:root { --bg: #F2EFE8; --paper: #FFFFFF; --ink: #121212; --soft: #6B6760; --line: #E3DED3; --go: #121212; --ok: #0F9D58; --warn: #B45309; --warnbg: #FFF4D6; --flag: #FFE27A;
+  --shadow: 0 1px 2px rgba(18,18,18,.06), 0 10px 30px rgba(18,18,18,.08); --mono: 'JetBrains Mono', ui-monospace, Menlo, monospace; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 500 16.5px/1.45 'Bricolage Grotesque', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #3B82F6; outline-offset: 2px; }
+.wrap { max-width: 560px; margin: 0 auto; padding: 20px 16px 140px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand svg { width: 40px; height: 40px; flex: none; }
+.brand b { font: 800 26px/1 'Bricolage Grotesque', sans-serif; letter-spacing: -.02em; }
+h1 { margin: 18px 0 6px; font: 800 38px/1.02 'Bricolage Grotesque', sans-serif; letter-spacing: -.035em; }
+.sub { margin: 0; color: var(--soft); font-size: 16px; }
+.start { display: grid; gap: 10px; margin-top: 20px; }
+.big { display: flex; align-items: center; justify-content: center; gap: 10px; height: 60px; border-radius: 16px; border: 0; background: var(--go); color: #fff; font: 800 19px/1 'Bricolage Grotesque', sans-serif; cursor: pointer; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.btn { display: flex; align-items: center; justify-content: center; text-align: center; min-height: 48px; padding: 6px 10px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--paper); font-weight: 700; font-size: 15px; line-height: 1.15; cursor: pointer; }
+.btn.small { min-height: 38px; font-size: 14px; border-radius: 11px; padding: 4px 12px; }
+.typed { margin-top: 10px; background: var(--paper); border: 1.5px solid var(--line); border-radius: 16px; padding: 10px; }
+.typed textarea { width: 100%; min-height: 150px; border: 0; outline: 0; resize: vertical; background: #F7F6F2; border-radius: 10px; padding: 10px 12px; font: 500 15px/1.5 var(--mono); }
+.typed .btn { margin-top: 8px; width: 100%; background: var(--go); color: #fff; border: 0; }
+.note { margin: 14px 0 0; color: var(--soft); font-size: 14px; }
+.note b { color: var(--ink); }
+/* scanning */
+.scan { margin-top: 18px; position: relative; border-radius: 18px; overflow: hidden; background: #000; box-shadow: var(--shadow); }
+.scan img { display: block; width: 100%; max-height: 62vh; object-fit: contain; opacity: .9; }
+.scan .bar { position: absolute; left: 0; right: 0; height: 90px; top: 0; background: linear-gradient(transparent, rgba(255,226,122,.55) 85%, #FFE27A); border-bottom: 3px solid #FFE27A; animation: sweep 1.6s ease-in-out infinite alternate; }
+@keyframes sweep { from { transform: translateY(-90px); } to { transform: translateY(calc(62vh - 10px)); } }
+.scan .say { position: absolute; left: 12px; right: 12px; bottom: 12px; background: rgba(18,18,18,.85); color: #fff; border-radius: 12px; padding: 10px 14px; font-weight: 700; }
+/* people */
+h2 { margin: 26px 0 10px; font: 800 14px/1.2 'Bricolage Grotesque', sans-serif; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
+.addp { display: flex; gap: 8px; }
+.addp input { flex: 1; min-width: 0; height: 48px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--paper); padding: 0 14px; font-weight: 600; }
+.addp button { height: 48px; padding: 0 18px; border-radius: 14px; border: 0; background: var(--go); color: #fff; font-weight: 800; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 14px 0 6px; border-radius: 99px; border: 2px solid transparent; background: var(--paper); box-shadow: var(--shadow); font-weight: 800; font-size: 16px; cursor: pointer; }
+.chip i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 800 13px/1 'Bricolage Grotesque', sans-serif; font-style: normal; flex: none; }
+.chip.on { border-color: var(--ink); transform: translateY(-1px); }
+.chip .x { margin-left: 2px; color: var(--soft); font-weight: 700; }
+.chip.all i { background: var(--ink); }
+/* the receipt */
+.receipt { position: relative; margin-top: 8px; background: var(--paper); border-radius: 6px 6px 0 0; padding: 16px 14px 22px; box-shadow: var(--shadow); font-family: var(--mono); }
+.receipt::after { content: ''; position: absolute; left: 0; right: 0; bottom: -12px; height: 12px; background: linear-gradient(-45deg, transparent 8px, var(--paper) 0) 0 0 / 16px 12px repeat-x, linear-gradient(45deg, transparent 8px, var(--paper) 0) 0 0 / 16px 12px repeat-x; }
+.hint { font: 600 14px/1.35 'Bricolage Grotesque', sans-serif; color: var(--soft); margin: 0 0 10px; }
+.it { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; padding: 9px 8px; margin: 0 -8px; border-radius: 10px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.it + .it { border-top: 1px dashed var(--line); }
+.it:active { background: #F6F4EE; }
+.it .nm { font-weight: 700; font-size: 15px; line-height: 1.3; }
+.it .nm small { font-weight: 500; color: var(--soft); }
+.it .am { font-weight: 700; font-size: 15px; text-align: right; }
+.it .who { grid-column: 1 / -1; display: flex; gap: 4px; flex-wrap: wrap; min-height: 22px; align-items: center; }
+.it .who i { height: 22px; min-width: 22px; padding: 0 7px; border-radius: 99px; color: #fff; font: 800 12px/22px 'Bricolage Grotesque', sans-serif; font-style: normal; }
+.it .who em { font: 600 12.5px/1 'Bricolage Grotesque', sans-serif; color: #A8A298; font-style: normal; }
+.it.pop { animation: pop .35s ease-out; }
+@keyframes pop { 30% { background: #FFF6CC; } }
+.sums { margin-top: 10px; border-top: 2px dashed var(--ink); padding-top: 8px; }
+.sum { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; font-size: 14.5px; }
+.sum.svc { background: var(--flag); margin: 2px -6px; padding: 5px 6px; border-radius: 6px; font-weight: 700; }
+.sum.svc.off { background: none; color: var(--soft); text-decoration: line-through; font-weight: 500; }
+.sum.tot { font-weight: 800; font-size: 17px; border-top: 2px dashed var(--ink); margin-top: 6px; padding-top: 8px; }
+.check { margin-top: 12px; font: 600 14px/1.35 'Bricolage Grotesque', sans-serif; display: grid; gap: 4px; }
+.check .good { color: var(--ok); } .check .bad { color: var(--warn); }
+.edit .it { cursor: default; grid-template-columns: 1fr 96px 34px; }
+.edit .it input { min-width: 0; height: 38px; border: 1.5px solid var(--line); border-radius: 9px; padding: 0 8px; font: 600 14.5px var(--mono); background: #FBFAF7; }
+.edit .it .del { height: 38px; border: 0; border-radius: 9px; background: #F4E3E3; color: #9B1C1C; font-weight: 800; }
+.edit .it .who { display: none; }
+.tools { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+/* service charge */
+.svccard { margin-top: 26px; background: var(--warnbg); border: 2px solid #F5B71A; border-radius: 16px; padding: 14px 16px; }
+.svccard b { display: block; font: 800 18px/1.2 'Bricolage Grotesque', sans-serif; }
+.svccard p { margin: 6px 0 10px; font-size: 14.5px; color: #4A3B12; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: #fff; border-radius: 12px; padding: 4px; gap: 4px; }
+.seg button { height: 42px; border: 0; border-radius: 9px; background: transparent; font-weight: 800; }
+.seg button.on { background: var(--ink); color: #fff; }
+/* result */
+.people { display: grid; gap: 10px; }
+.pc { background: var(--paper); border-radius: 16px; padding: 14px 16px; box-shadow: var(--shadow); border-left: 8px solid var(--c); }
+.pc .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.pc .top b { font: 800 20px/1.1 'Bricolage Grotesque', sans-serif; }
+.pc .top strong { font: 800 30px/1 'Bricolage Grotesque', sans-serif; letter-spacing: -.02em; }
+.pc .top small { color: var(--soft); font-weight: 700; font-size: 14px; }
+.pc ul { margin: 8px 0 0; padding: 0; list-style: none; font-size: 14px; color: var(--soft); }
+.pc li { display: flex; justify-content: space-between; gap: 10px; }
+.pc .acts { display: flex; gap: 8px; margin-top: 10px; }
+.payer { margin-top: 18px; background: var(--paper); border-radius: 16px; padding: 14px 16px; box-shadow: var(--shadow); display: grid; gap: 10px; }
+.payer label { font-weight: 800; font-size: 15px; display: grid; gap: 6px; }
+.payer select, .payer input { height: 48px; border-radius: 12px; border: 1.5px solid var(--line); background: #FBFAF7; padding: 0 12px; font-weight: 600; }
+.payer .bad { color: var(--warn); font-size: 13.5px; font-weight: 600; }
+.send { margin-top: 12px; display: grid; gap: 8px; }
+.send .big { background: #128C4A; }
+.limits { margin-top: 28px; font-size: 14px; color: var(--soft); }
+.limits b { color: var(--ink); }
+footer { margin-top: 22px; text-align: center; font-size: 13px; color: var(--soft); }
+footer a { color: inherit; }
+/* the sticky palette while assigning */
+.dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: rgba(242,239,232,.94); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-top: 1px solid var(--line); padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); }
+.dock .in { max-width: 560px; margin: 0 auto; }
+.dock .say { font-weight: 700; font-size: 14px; margin: 0 2px 8px; }
+.dock .chips { margin: 0; flex-wrap: nowrap; overflow-x: auto; padding: 2px 2px 4px; scrollbar-width: none; }
+.dock .chips::-webkit-scrollbar { display: none; }
+.dock .chip { flex: none; }
+.dock .go { margin-top: 8px; width: 100%; }
+/* modal (QR) */
+.modal { position: fixed; inset: 0; z-index: 60; background: rgba(18,18,18,.55); display: grid; place-items: center; padding: 16px; }
+.modal .card { width: min(380px, 100%); background: #fff; border-radius: 20px; padding: 18px; text-align: center; }
+.modal canvas, .modal img { width: 240px; height: 240px; image-rendering: pixelated; }
+.modal b { display: block; font: 800 22px/1.2 'Bricolage Grotesque', sans-serif; margin-bottom: 6px; }
+.modal p { margin: 6px 0; color: var(--soft); font-size: 14px; word-break: break-all; }
+/* pay page (a friend opens their link) */
+.paypage .amt { font: 800 56px/1 'Bricolage Grotesque', sans-serif; letter-spacing: -.03em; margin: 8px 0 4px; }
+.paypage .card { background: var(--paper); border-radius: 18px; padding: 18px; box-shadow: var(--shadow); margin-top: 16px; }
+.paypage ul { margin: 10px 0 0; padding: 0; list-style: none; font: 500 14.5px/1.6 var(--mono); }
+.paypage li { display: flex; justify-content: space-between; gap: 10px; }
+.paypage .qr { display: grid; place-items: center; margin-top: 14px; }
+.paypage .qr canvas { width: 220px; height: 220px; image-rendering: pixelated; }
+.toast { position: fixed; left: 50%; bottom: 120px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 12px; font-weight: 700; z-index: 70; }
+.finger { position: fixed; z-index: 80; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; background: rgba(59,130,246,.28); border: 3px solid rgba(59,130,246,.9); pointer-events: none; }
+.finger.down { transform: scale(.78); background: rgba(59,130,246,.45); }
+</style>
+</head>
+<body>
+<main class="wrap" id="app">
+  <div class="brand"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 4h28v40l-4.7-3-4.6 3-4.7-3-4.7 3-4.6-3L10 44V4Z" fill="#121212"/><path d="M16 14h16M16 21h16M16 28h9" stroke="#FFE27A" stroke-width="3.4" stroke-linecap="round"/><circle cx="33" cy="30" r="3.4" fill="#FF5A5F"/></svg><b>Bill Split</b></div>
+
+  <section id="start">
+    <h1>Split the bill by who had what.</h1>
+    <p class="sub">Scan the restaurant bill, tap who had what, and send everyone their exact share on UPI. Tax and service charge are shared fairly. Free, and the bill never leaves your phone.</p>
+    <div class="start">
+      <label class="big" id="scanBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M7 12h10"/></svg>Scan the bill<input type="file" id="cam" accept="image/*" capture="environment" hidden></label>
+      <div class="row2">
+        <label class="btn">Pick a photo<input type="file" id="pick" accept="image/*" hidden></label>
+        <button class="btn" id="typeBtn" type="button">Type it in</button>
+        <button class="btn" id="sampleBtn" type="button">Try a sample</button>
+      </div>
+    </div>
+    <div class="typed" id="typed" hidden>
+      <textarea id="typedText" spellcheck="false" placeholder="One line per item, then the charges. For example:&#10;2 x Cold Coffee 360&#10;Fries 220&#10;Pizza 420&#10;GST 5% 50&#10;Service charge 10% 100&#10;Total 1150"></textarea>
+      <button class="btn" id="typedGo" type="button">Use this bill</button>
+    </div>
+  </section>
+
+  <section id="reading" hidden>
+    <div class="scan"><img id="photo" alt="The bill"><div class="bar"></div><div class="say" id="readSay">Reading the bill…</div></div>
+  </section>
+
+  <section id="bill" hidden>
+    <h2>Who's splitting?</h2>
+    <form class="addp" id="addForm" autocomplete="off"><input id="addName" placeholder="Add a name, e.g. Aditi" maxlength="18" enterkeyhint="done" aria-label="Add a person"><button type="submit">Add</button></form>
+    <div class="chips" id="peopleChips"></div>
+
+    <h2 id="itemsTitle">The bill</h2>
+    <div class="receipt" id="receipt">
+      <p class="hint" id="hint">Pick a name below, then tap what they had. Shared something? Tap it for each person.</p>
+      <div id="items"></div>
+      <div class="sums" id="sums"></div>
+      <div class="check" id="check"></div>
+    </div>
+    <div class="tools"><button class="btn small" id="editBtn" type="button">✎ Fix items</button><button class="btn small" id="addItemBtn" type="button" hidden>+ Add item</button><button class="btn small" id="restartBtn" type="button">New bill</button></div>
+
+    <div class="svccard" id="svcCard" hidden>
+      <b id="svcTitle">Service charge is optional</b>
+      <p>Restaurants can't make you pay it: the government's 2022 rules, upheld by the Delhi High Court in 2025. You can ask them to take it off, or keep it if the service was good.</p>
+      <div class="seg"><button type="button" id="svcKeep">Keep it</button><button type="button" id="svcDrop">Take it off</button></div>
+    </div>
+  </section>
+
+  <section id="result" hidden>
+    <h2>Who pays what</h2>
+    <div class="people" id="people"></div>
+    <div class="payer">
+      <label>Who paid the bill?<select id="payerSel"></select></label>
+      <label>Their UPI ID<input id="vpa" placeholder="name@okaxis" inputmode="email" autocapitalize="off" autocomplete="off" spellcheck="false"></label>
+      <span class="bad" id="vpaBad" hidden>That doesn't look like a UPI ID (it looks like name@bank).</span>
+    </div>
+    <div class="send">
+      <button class="big" id="sendBtn" type="button">Send everyone their share</button>
+      <button class="btn" id="copyBtn" type="button">Copy the split</button>
+    </div>
+    <p class="note" id="roundNote"></p>
+  </section>
+
+  <section id="pay" class="paypage" hidden></section>
+
+  <p class="limits" id="limits"><b>Honest limits:</b> it reads printed bills; faded or handwritten ones may need a fix by hand, so check the items before you send. The UPI link opens your UPI app with the amount filled in; if an app won't open it, use the QR or the UPI ID. The first scan downloads the reader (a few MB); the photo itself never leaves your phone.</p>
+  <footer>Bill Split · built with Claude by <a href="https://instagram.com/raj_triess">Raj Tries</a> · free and open source</footer>
+</main>
+
+<div class="dock" id="dock" hidden><div class="in"><p class="say" id="dockSay">Tap a name, then tap what they had</p><div class="chips" id="dockChips"></div><button class="big go" id="splitBtn" type="button">See who pays what</button></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

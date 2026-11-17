@@ -1,0 +1,55 @@
+{
+ "items": [
+  {
+   "name": "Cold Coffee",
+   "qty": 2,
+   "amount": 360.0
+  },
+  {
+   "name": "Masala Chai",
+   "qty": 1,
+   "amount": 60.0
+  },
+  {
+   "name": "Peri Peri Fries",
+   "qty": 1,
+   "amount": 220.0
+  },
+  {
+   "name": "Paneer Tikka Pizza",
+   "qty": 1,
+   "amount": 420.0
+  },
+  {
+   "name": "Virgin Mojito",
+   "qty": 2,
+   "amount": 380.0
+  },
+  {
+   "name": "Chicken Burger",
+   "qty": 1,
+   "amount": 290.0
+  },
+  {
+   "name": "Nachos with Cheese Dip",
+   "qty": 1,
+   "amount": 260.0
+  },
+  {
+   "name": "Pasta Alfredo",
+   "qty": 1,
+   "amount": 360.0
+  },
+  {
+   "name": "Chocolate Brownie with Ice Cream",
+   "qty": 1,
+   "amount": 240.0
+  }
+ ],
+ "subtotal": 2590.0,
+ "tax": 129.5,
+ "service": 259.0,
+ "discount": 0,
+ "roundoff": -0.5,
+ "total": 2978
+}

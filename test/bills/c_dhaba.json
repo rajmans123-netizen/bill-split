@@ -1,0 +1,40 @@
+{
+ "items": [
+  {
+   "name": "Paneer Butter Masala",
+   "qty": 1,
+   "amount": 320.0
+  },
+  {
+   "name": "Chicken Tikka",
+   "qty": 1,
+   "amount": 380.0
+  },
+  {
+   "name": "Tandoori Roti",
+   "qty": 8,
+   "amount": 240.0
+  },
+  {
+   "name": "Veg Biryani",
+   "qty": 1,
+   "amount": 280.0
+  },
+  {
+   "name": "Masala Papad",
+   "qty": 2,
+   "amount": 120.0
+  },
+  {
+   "name": "Sweet Lassi",
+   "qty": 3,
+   "amount": 270.0
+  }
+ ],
+ "subtotal": 1610.0,
+ "tax": 72.46,
+ "service": 72.45,
+ "discount": 161.0,
+ "roundoff": 0,
+ "total": 1593.91
+}

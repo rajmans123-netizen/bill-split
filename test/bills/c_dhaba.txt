@@ -1,0 +1,34 @@
+SAMPLE DHABA & GRILL
+Baner Road, Pune
+Ph: 020-0000 0000
+TAX INVOICE
+
+Bill: 77104 Tbl: 9 Cov: 4
+Dt: 17/11/2026 21:15
+Particulars Qty Rate Amt
+Paneer Butter Masala
+
+1 320.00 320.00
+Chicken Tikka
+
+1 380.00 380.00
+Tandoori Roti
+
+8 30.00 240.00
+Veg Biryani
+
+1 280.00 280.00
+Masala Papad
+
+2 60.00 120.00
+Sweet Lassi
+
+3 90.00 270.00
+Gross Amount 1610.00
+Less: Discount 10% -161.00
+S.C. @ 5% 72.45
+CGST @ 2.5% 36.23
+SGST @ 2.5% 36.23
+Net Amount 1593.91
+
+** Have a nice day **

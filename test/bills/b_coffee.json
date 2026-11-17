@@ -1,0 +1,35 @@
+{
+ "items": [
+  {
+   "name": "Cappuccino",
+   "qty": 1,
+   "amount": 180.0
+  },
+  {
+   "name": "Iced Americano",
+   "qty": 2,
+   "amount": 320.0
+  },
+  {
+   "name": "Croissant",
+   "qty": 1,
+   "amount": 150.0
+  },
+  {
+   "name": "Hazelnut Frappe",
+   "qty": 1,
+   "amount": 240.0
+  },
+  {
+   "name": "Banana Bread",
+   "qty": 1,
+   "amount": 130.0
+  }
+ ],
+ "subtotal": 1020.0,
+ "tax": 51.0,
+ "service": 0,
+ "discount": 0,
+ "roundoff": 0,
+ "total": 1071.0
+}
