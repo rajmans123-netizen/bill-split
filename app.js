@@ -4,7 +4,7 @@ import { parseBill } from './parse.js';
 import { split, upiLink, validVpa } from './split.js';
 import { readBill, warmUp } from './ocr.js';
 const $ = id => document.getElementById(id);
-const SAMPLE_FRIENDS = ['Ananya', 'Kunal', 'Farhan'];   // "Try a sample" fills the table with these, so the split can be tried straight away
+const SAMPLE_FRIENDS = ['Ananya', 'Kunal'];   // "Try a sample" fills the table with these, so the split can be tried straight away
 const COLORS = ['#FF5A5F', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16'];
 const S = { items: [], charges: [], subtotal: null, total: null, printedSub: null, people: [], active: null, dropService: false, payer: null, editing: false, demo: false, result: null, showResult: false };
 const store = { get(k, d) { try { const v = localStorage.getItem('bs.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('bs.' + k, JSON.stringify(v)); } catch { } } };
