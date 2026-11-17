@@ -4,6 +4,7 @@ import { parseBill } from './parse.js';
 import { split, upiLink, validVpa } from './split.js';
 import { readBill, warmUp } from './ocr.js';
 const $ = id => document.getElementById(id);
+const SAMPLE_FRIENDS = ['Ananya', 'Kunal', 'Farhan'];   // "Try a sample" fills the table with these, so the split can be tried straight away
 const COLORS = ['#FF5A5F', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16'];
 const S = { items: [], charges: [], subtotal: null, total: null, printedSub: null, people: [], active: null, dropService: false, payer: null, editing: false, demo: false, result: null, showResult: false };
 const store = { get(k, d) { try { const v = localStorage.getItem('bs.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('bs.' + k, JSON.stringify(v)); } catch { } } };
@@ -30,6 +31,7 @@ export function useText(text, fromScan = false) {
   S.charges = r.charges.map(c => ({ ...c, id: nid('c') }));
   S.printedSub = r.check.hasSubtotal ? r.subtotal : null; S.total = r.total; S.totalPrinted = r.check.hasTotal; S.dropService = false; S.result = null; S.showResult = false; S.editing = false;
   if (!S.people.length) addPerson(store.get('me', 'Me'));
+  if (S.sample) { for (const n of SAMPLE_FRIENDS) if (!S.people.some(p => p.name === n)) addPerson(n); S.sample = false; }
   S.active = S.people[0]?.id ?? null;
   show('bill'); render(); window.scrollTo({ top: 0 });
 }
@@ -132,7 +134,7 @@ function renderDock() {
   for (const p of S.people) { const b = chip(p, { on: S.active === p.id }); b.onclick = () => { S.active = p.id; render(); }; dc.append(b); }
   if (S.people.length > 1) { const b = chip({ id: 'all', name: 'Everyone', color: '#121212' }, { on: S.active === 'all' }); b.classList.add('all'); b.querySelector('i').textContent = '∀'; b.onclick = () => { S.active = 'all'; render(); }; dc.append(b); }
   const a = S.people.find(p => p.id === S.active);
-  $('dockSay').textContent = !S.people.length ? 'Add the names of everyone at the table' : S.active === 'all' ? 'Tap the things everyone shared' : a ? `Tap what ${a.name} had` : 'Tap a name, then tap what they had';
+  $('dockSay').textContent = !S.people.length ? 'Add the names of everyone at the table' : S.active === 'all' ? 'Tap the things everyone shared' : a ? (/^me$/i.test(a.name) ? 'Tap what you had' : `Tap what ${a.name} had`) : 'Tap a name, then tap what they had';
   $('splitBtn').disabled = S.people.length < 2; $('splitBtn').style.opacity = S.people.length < 2 ? .45 : 1;
   $('splitBtn').textContent = S.people.length < 2 ? 'Add at least 2 people' : 'See who pays what';
 }
@@ -240,12 +242,12 @@ function payPage(data) {
 }
 
 // ---------------------------------------------------------------- wiring
-$('cam').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) fromPhoto(f); };
-$('pick').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) fromPhoto(f); };
+$('cam').onchange = e => { S.sample = false; const f = e.target.files[0]; e.target.value = ''; if (f) fromPhoto(f); };
+$('pick').onchange = e => { S.sample = false; const f = e.target.files[0]; e.target.value = ''; if (f) fromPhoto(f); };
 $('scanBtn').addEventListener('pointerdown', warmUp, { once: true });
 $('typeBtn').onclick = () => { $('typed').hidden = !$('typed').hidden; if (!$('typed').hidden) $('typedText').focus(); };
-$('typedGo').onclick = () => useText($('typedText').value);
-$('sampleBtn').onclick = async () => { const b = await (await fetch('sample-bill.jpg')).blob(); fromPhoto(new File([b], 'sample-bill.jpg', { type: 'image/jpeg' })); };
+$('typedGo').onclick = () => { S.sample = false; useText($('typedText').value); };
+$('sampleBtn').onclick = async () => { S.sample = true; const b = await (await fetch('sample-bill.jpg')).blob(); fromPhoto(new File([b], 'sample-bill.jpg', { type: 'image/jpeg' })); };
 $('addForm').onsubmit = e => { e.preventDefault(); const p = addPerson($('addName').value); if (p) { S.active = p.id; if (S.people.length === 1) store.set('me', p.name); } $('addName').value = ''; render(); };
 $('editBtn').onclick = () => { S.editing = !S.editing; S.showResult = false; render(); };
 $('addItemBtn').onclick = () => { S.items.push({ id: nid('i'), name: 'New item', qty: 1, amount: 0, who: [] }); render(); };

@@ -2,7 +2,7 @@
 import { split, upiLink, validVpa } from '../split.js';
 let fails = 0, n = 0;
 const ok = (c, msg) => { n++; if (!c) { fails++; console.log('  FAIL', msg); } };
-const P = ['Raj', 'Aditi', 'Kabir', 'Zoya'].map((name, i) => ({ id: 'p' + i, name }));
+const P = ['Raj', 'Ananya', 'Kunal', 'Farhan'].map((name, i) => ({ id: 'p' + i, name }));
 const sum = (rows, k) => Math.round(rows.reduce((a, r) => a + r[k], 0) * 100) / 100;
 
 // the sample cafe bill: 2590 food, 129.50 GST, 259 service, -0.50 round off = 2978
