@@ -171,7 +171,7 @@ function renderResult() {
   $('vpaBad').hidden = !$('vpa').value || validVpa($('vpa').value);
   const notes = [];
   if (r.dropped) notes.push(`Service charge of ${rs(r.dropped, true)} taken off: ask the restaurant to remove it from the bill before paying.`);
-  if (Math.abs(r.roundingDiff) >= 0.01) notes.push(`Friends' shares are rounded to whole rupees; ${payer?.name || 'the payer'} covers the ${rs(Math.abs(r.roundingDiff), true)} difference.`);
+  if (Math.abs(r.roundingDiff) >= 0.01) notes.push(`Friends' shares are rounded to whole rupees; ${/^(me|you)$/i.test(payer?.name || '') ? 'you cover' : (payer?.name || 'the payer') + ' covers'} the ${rs(Math.abs(r.roundingDiff), true)} difference.`);
   if (r.unassigned.length) notes.push(`${r.unassigned.length} item${r.unassigned.length > 1 ? 's were' : ' was'} shared by everyone because nobody was given ${r.unassigned.length > 1 ? 'them' : 'it'}.`);
   $('roundNote').textContent = notes.join(' ');
 }
@@ -267,5 +267,5 @@ addEventListener('hashchange', () => { if (/^#pay=/.test(location.hash) || $('pa
 const Q = new URLSearchParams(location.search);
 const pay = location.hash.match(/^#pay=([\w-]+)/);
 if (pay) { try { payPage(unb64(pay[1])); } catch { show('start'); toast('That pay link is broken. Ask for a new one.'); } }
-window.BS = { S, render, useText, addPerson, compute, split, parseBill, payPage, payUrl, showQR, drawQR, upiLink, $ };
+window.BS = { S, render, useText, addPerson, compute, split, parseBill, payPage, payUrl, payPayload, showQR, drawQR, upiLink, show, $ };
 if (Q.has('demo')) import('./demo.js').then(m => m.start(window.BS)).catch(e => console.error(e));
