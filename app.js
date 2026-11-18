@@ -197,8 +197,18 @@ function splitText() {
   lines.push('', `Split your next bill free: ${HOME()}`);
   return lines.join('\n');
 }
+// pay links and QR codes say who to pay, so "Me" gets a real name once (remembered for next time)
+function nameThePayer() {
+  const p = S.people.find(x => x.id === S.payer); if (!p || !/^me$/i.test(p.name) || S.demo) return true;
+  const n = (prompt('Your name, so friends know who they are paying:', '') || '').trim().replace(/\s+/g, ' ').slice(0, 18);
+  if (!n) return false;
+  p.name = n; store.set('me', n);
+  const v = $('vpa').value.trim(); if (validVpa(v)) { const m = store.get('vpa', {}); m[n] = v; store.set('vpa', m); }
+  render(); return true;
+}
 async function send() {
   if (!S.result) return;
+  if (!nameThePayer()) return;
   if ($('vpa').value && !validVpa($('vpa').value)) { $('vpaBad').hidden = false; $('vpa').focus(); return; }
   if (!$('vpa').value) { toast(`Add ${S.people.find(p => p.id === S.payer)?.name}'s UPI ID so friends get a pay link`); $('vpa').focus(); return; }
   const text = splitText();
@@ -211,6 +221,7 @@ function drawQR(text, canvas, scale = 6) {
   for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) g.fillRect((c + m) * scale, (r + m) * scale, scale, scale);
 }
 function showQR(row) {
+  if (!nameThePayer()) return;
   const vpa = $('vpa').value.trim(); const payer = S.people.find(p => p.id === S.payer);
   if (!validVpa(vpa)) { toast(`Add ${payer?.name}'s UPI ID first`); $('vpa').focus(); return; }
   const m = el('div', 'modal'); const c = el('div', 'card'); const cv = el('canvas');
@@ -258,7 +269,7 @@ $('splitBtn').onclick = () => { if (S.people.length < 2) return; S.showResult = 
 $('payerSel').onchange = () => { S.payer = $('payerSel').value; render(); };
 $('vpa').oninput = () => { const v = $('vpa').value.trim(); const payer = S.people.find(p => p.id === S.payer); $('vpaBad').hidden = !v || validVpa(v); if (payer && validVpa(v)) { const m = store.get('vpa', {}); m[payer.name] = v; store.set('vpa', m); } };
 $('sendBtn').onclick = send;
-$('copyBtn').onclick = () => { if (!S.result) return; navigator.clipboard?.writeText(splitText()).then(() => toast('Copied. Paste it in your group.')); };
+$('copyBtn').onclick = () => { if (!S.result || !nameThePayer()) return; navigator.clipboard?.writeText(splitText()).then(() => toast('Copied. Paste it in your group.')); };
 
 // the name bar steps aside once the shares are on screen
 const watchResult = () => { const v = !$('result').hidden && $('result').getBoundingClientRect().top < innerHeight * 0.6; if (v !== resultInView) { resultInView = v; renderDock(); } };
